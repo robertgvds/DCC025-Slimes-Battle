@@ -1,20 +1,28 @@
 package com.exercicio3;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Scanner;
 
 import com.exercicio3.slime_types.*;
 
+/*
+* Autor: Robert Gonçalves Vieira de Souza
+* Matricula: 202365505B
+* 
+* A classe Interface representa a interface do usuário para o jogo de Slimes.
+* Ela contém métodos para iniciar o jogo, obter entradas do usuário, imprimir
+* o estado atual do jogo e determinar o resultado final do jogo.
+*/
+
 public class Interface {
     
-    private static Map<Character, Slime> slimes = new HashMap<>();
-    private static Scanner teclado = new Scanner(System.in);
+    private static Partida partida; // A partida atual.
+    private static Scanner teclado = new Scanner(System.in); // Scanner para obter entradas do usuário.
     
     public static void start() {
-
+        // Inicia o jogo, exibe as regras e permite que os jogadores escolham os ancestrais dos seus slimes.
+        
         System.out.println("Bem vindo ao jogo de Slimes!");
-
+        
         System.out.println("\nRegras:");
         System.out.println("Cada slime tem 3 habilidades ativadas pelos seguintes comandos:");
         System.out.println("0: Terminar o turno");
@@ -22,29 +30,38 @@ public class Interface {
         System.out.println("2: Energizar");
         System.out.println("3: Especial");
         System.out.println(
-                "Cada jogador pode escolher o ancestral do slime no comeco do jogo, que determina a habilidade especial do slime.");
-
-        System.out.println("\nOs ancestrais disponíveis são:\n");
-        System.out.println("1 - Vampiro");
-        System.out.println("2 - Dragão");
-        System.out.println("3 - Sereia");
-        System.out.println("4 - Anjo");
-        System.out.println("5 - Demônio");
-
-        System.out.println("\nEscolha o ancestral do slime A:");
-        slimes.put('A', getAncestral());
-
+            "Cada jogador pode escolher o ancestral do slime no comeco do jogo, que determina a habilidade especial do slime.");
+            
+            System.out.println("\nOs ancestrais disponíveis são:\n");
+            System.out.println("1 - Vampiro");
+            System.out.println("2 - Dragão");
+            System.out.println("3 - Sereia");
+            System.out.println("4 - Anjo");
+            System.out.println("5 - Demônio");
+            
+            System.out.println("\nEscolha o ancestral do slime A:");
+            Slime slimeA = getAncestral();
+            
         System.out.println("\nEscolha o ancestral do slime B:");
-        slimes.put('B', getAncestral());
-
+        Slime slimeB = getAncestral();
+        
         System.out.println( "-----------------------------------\r\n" +
-                            "INICIADO O JOGO\r\n" +
-                            "-----------------------------------");
-
-        startPartida();
+        "INICIADO O JOGO\r\n" +
+        "-----------------------------------");
+        
+        partida = new Partida(slimeA, slimeB);
+        partida.startPartida();
     }
-
-    private static int getInput() {
+    
+    private static String arredondar(double valor) {
+        // Arredonda um valor double para duas casas decimais.
+        
+        return String.format(java.util.Locale.US, "%.2f", valor);
+    }
+    
+    public static int getInput() {
+        // Obtém a entrada do usuário e a converte para um inteiro.
+        
         try {
             int input = Integer.parseInt(teclado.next());
             return input;
@@ -54,11 +71,9 @@ public class Interface {
         }
     }
 
-    private static String arredondar(double valor) {
-        return String.format(java.util.Locale.US, "%.2f", valor);
-    }
-
     private static Slime getAncestral() {
+        // Obtém a escolha do ancestral do slime a partir da entrada do usuário.
+
         switch (getInput()) {
             case 1:
                 return new Vampiro();
@@ -77,70 +92,25 @@ public class Interface {
         }
     }
 
-    private static void startPartida() {
-        char slimeAtual = 'A';
-        char slimeAdversario = 'B';
+    public static void printJogada(char slimeAtual, char slimeAdversario) {
+        // Imprime o estado atual dos slimes e solicita ao jogador que escolha uma habilidade para o slime atual usar.
 
-        while (!ehFimDoJogo()) {
-            System.out.println( "-----------------------------------\r\n" +
-                                "TURNO DO SLIME " + slimeAtual + " \r\n" +
-                                "-----------------------------------");
-
-            do {
-                System.out.println("\nVida atual dos slimes: A: " + arredondar(slimes.get('A').getVida()) + " B: " + arredondar(slimes.get('B').getVida()));
-                System.out.println("Digite a habilidade para o slime " + slimeAtual + " usar: (energia restante: " + slimes.get(slimeAtual).getEnergia() + ")");
-                System.out.println("0: Terminar o turno");
-                System.out.println("1: Ataque");
-                System.out.println("2: Energizar");
-                System.out.println("3: Especial: " + slimes.get(slimeAtual).getEspecial() + "\n");
-
-            } while (jogada(slimeAtual, slimeAdversario) && slimes.get(slimeAtual).getEnergia() > 0 && !ehFimDoJogo());
-
-            slimes.get(slimeAtual).setEnergia(slimes.get(slimeAtual).getEnergia() + 2);
-
-            for(Slime slime : slimes.values()) {
-                slime.setUsouEnergizar(false);
-            }
-
-            slimes.get(slimeAdversario).setInvulneravel(false);
-
-            slimeAtual = (slimeAtual == 'A') ? 'B' : 'A';
-            slimeAdversario = (slimeAdversario) == 'A' ? 'B' : 'A';
-        }
-
-        finalDoJogo();
+        System.out.println("\nVida atual dos slimes: A: " + arredondar(partida.getSlime('A').getVida()) + " B: " + arredondar(partida.getSlime('B').getVida()));
+        System.out.println("Digite a habilidade para o slime " + slimeAtual + " usar: (energia restante: " + partida.getSlime(slimeAtual).getEnergia() + ")");
+        System.out.println("0: Terminar o turno");
+        System.out.println("1: Ataque");
+        System.out.println("2: Energizar");
+        System.out.println("3: Especial: " + partida.getSlime(slimeAtual).getEspecial() + "\n");
     }
 
-    private static boolean jogada(char slimeAtual, char slimeAdversario) {
-        switch (getInput()) {
-            case 0:
-                return false;
-            case 1:
-                slimes.get(slimeAtual).atacar(slimes.get(slimeAdversario));
-                break;
-            case 2:
-                slimes.get(slimeAtual).energizar();
-                break;
-            case 3:
-                slimes.get(slimeAtual).especial(slimes.get(slimeAdversario));
-                break;
-            default:
-                System.out.println("\nEscolha inválida, escolha uma opção válida.\n");
-                return jogada(slimeAtual, slimeAdversario);
-        }
-        return true;
-    }
+    public static void finalDoJogo() {
+        // Determina e imprime o resultado final do jogo com base na vida restante dos slimes.
 
-    private static boolean ehFimDoJogo() {
-        return (slimes.get('A').getVida() <= 0 || slimes.get('A').getVida() <= 0);
-    }
-
-    private static void finalDoJogo() {
-        if (slimes.get('A').getVida() <= 0 && slimes.get('B').getVida() <= 0) {
+        if (partida.getSlime('A').getVida() <= 0 && partida.getSlime('B').getVida() <= 0) {
             System.out.println( "-----------------------------------\r\n" + //
                                 "Empate\r\n" + //
                                 "-----------------------------------");
-        } else if (slimes.get('A').getVida() <= 0) {
+        } else if (partida.getSlime('A').getVida() <= 0) {
             System.out.println( "-----------------------------------\r\n" + //
                                 "Slime B venceu\r\n" + //
                                 "-----------------------------------");

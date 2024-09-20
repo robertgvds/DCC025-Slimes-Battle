@@ -1,5 +1,13 @@
 package com.exercicio3.slime_types;
 
+/*
+* Autor: Robert Gonçalves Vieira de Souza
+* Matricula: 202365505B
+* 
+* Esta representa um tipo de Slime com uma habilidade especial do seu ancestral.
+* Esta classe estende a classe Slime e sobrescreve os métodos especial e getEspecial.
+*/
+
 public class Sereia extends Slime {
     public Sereia() {
         super();
@@ -7,6 +15,7 @@ public class Sereia extends Slime {
 
     @Override
     public void especial(Slime adversario) {
+
         if(this.getEnergia() >= 6) {
             this.setEnergia(2);
             adversario.setEnergia(0);
