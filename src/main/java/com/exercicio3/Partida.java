@@ -58,7 +58,7 @@ public class Partida {
             this.getSlime(slimeAdversario).setInvulneravel(false);
 
             slimeAtual = (slimeAtual == 'A') ? 'B' : 'A';
-            slimeAdversario = (slimeAdversario) == 'A' ? 'B' : 'A';
+            slimeAdversario = (slimeAdversario == 'B') ? 'A' : 'B';
         }
 
         Interface.finalDoJogo();
@@ -89,6 +89,6 @@ public class Partida {
     private boolean ehFimDoJogo() {
         // Verifica se o jogo chegou ao fim com base na vida dos slimes.
 
-        return (this.getSlime('A').getVida() <= 0 || this.getSlime('A').getVida() <= 0);
+        return (this.getSlime('A').getVida() <= 0 || this.getSlime('B').getVida() <= 0);
     }
 }
